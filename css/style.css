@@ -1,0 +1,194 @@
+/* Adding Varaibles
+=================== */
+:root {
+    --bg-dark-color: #192A32;
+    --bg-light-color: #1F3540;
+    --bg-accent-color-yellow: #F2B137;
+    --bg-accent-color-yellow-dark: #906C29;
+    --bg-accent-color-green: #31C4C0;
+}
+
+
+/* Reset page default stylings and Global Styles
+================================================ */
+*,
+*::before,
+*::after {
+    margin: 0px;
+    padding:0px;
+    box-sizing: border-box;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-decoration: none;
+    list-style: none;
+    color: #fff;
+}
+
+*::selection {
+    background-color: var(--bg-accent-color-yellow);
+    color: #fff;
+}
+
+body {
+    background: var(--bg-dark-color);
+    /* overflow: hidden; */
+    width: 100vw;
+    padding-top: 10px;
+}
+
+#app {
+    min-height: 100vh;
+    margin: auto;
+}
+
+button {
+    cursor: pointer;
+}
+
+.watermark {
+    position: absolute;
+    opacity: 0.02;
+    z-index: -1;
+}
+
+.watermark.o {
+    top: -70px;
+    right: -150px;
+}
+
+.watermark.x {
+    bottom: -70px;
+    left: -150px;
+}
+
+p {
+    font-size: 15px;
+}
+
+/* Home Page styling
+==================== */
+.home-page {
+    width: 70%;
+    max-width: 1900px;
+    min-width: 350px;
+    margin: auto;
+}
+.home-page h1 {
+    margin-top: 90px;
+    font-size: 70px;
+    font-weight: 900;
+    position: relative;
+    display: inline-block;
+}
+.home-page h1 .xo {
+    top: 0;
+    left: -40px;
+}
+.home-page h1 span.color-yellow {
+    color: var(--bg-accent-color-yellow);
+}
+.home-page h1 span.color-green {
+    color: var(--bg-accent-color-green);
+}
+.home-page #start-game {
+    margin-top: 50px;
+    display: block;
+    padding: 15px 20px;
+    min-width: 250px;
+    border: none;
+    background: var(--bg-accent-color-yellow);
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 0px var(--bg-accent-color-yellow-dark);
+    transition: box-shadow 0.2s ease, transform 0.2s ease; 
+}
+
+/* Match Details Form Page Styling
+================================== */
+.match-details-page form{
+    margin: 50px 0px;
+    width: 70%;
+}
+.match-details-page form .form-boxes-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+.match-details-page form .form-box{
+    background: var(--bg-light-color);
+    padding: 40px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+}
+.match-details-page form .form-box *{
+    display: block;
+}
+.match-details-page form .form-box h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    width: 100%;
+    margin-bottom: 20px ;
+    gap: 10px;
+}
+.match-details-page form .form-box img{
+    width: 20px;
+}
+.match-details-page form .form-box .player-one-head span{
+    color: var(--bg-accent-color-green)
+}
+.match-details-page form .form-box .player-two-head span{
+    color: var(--bg-accent-color-yellow)
+}
+.match-details-page form .form-box input{
+    width: 100%;
+    background-color: var(--bg-dark-color);
+    border: none;   
+    margin: 10px 0px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0px 10px;
+}
+.match-details-page form .form-box:first-of-type input:focus{
+    outline: 2px solid var(--bg-accent-color-green);
+}
+.match-details-page form .form-box:nth-of-type(2) input:focus{
+    outline: 2px solid var(--bg-accent-color-yellow);
+}
+
+.match-details-page form button{
+    margin-top: 50px;
+    display: block;
+    padding: 15px 20px;
+    min-width: 250px;
+    border: none;
+    background: var(--bg-accent-color-yellow);
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 0px var(--bg-accent-color-yellow-dark);
+    transition: box-shadow 0.2s ease, transform 0.2s ease; 
+}
+
+/* Media Queries */
+@media screen and (max-width: 900px) {
+    .match-details-page form{
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .match-details-page form{
+        flex-direction: column;
+    }
+    .match-details-page form .form-box{
+        width: 100%;
+    }
+}
