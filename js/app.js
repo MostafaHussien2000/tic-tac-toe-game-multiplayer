@@ -6,9 +6,13 @@ let currnetRoute = "/";
 const ALL_ROUTES = [
   "/",
   "/match-details",
-  "/playground",
-  "/playground/round-result",
+  "/match/playground",
+  "/match/round-result",
 ];
+let CURRENT_PLAYER = 1;
+
+const HITS_ARRAY = new Array(9).fill(0);
+let HITS_NUM = 0;
 
 /* DOM Elements
 =============== */
@@ -46,7 +50,7 @@ const submitMatchDetailsForm = (e) => {
   e.preventDefault();
 
   const matchDetails = {
-    id: GENERATE_RANDOM_ID(),
+    id: GENERATE_RANDOM_ID(36),
     matchDate: Date.now(),
     playerOneName: e.target[0].value,
     playerTwoName: e.target[1].value,
@@ -65,6 +69,122 @@ const submitMatchDetailsForm = (e) => {
     matchesData.push(matchDetails);
     localStorage.setItem("matches-data", JSON.stringify(matchesData));
   }
+
+  moveToRouteHandler("/match/playground");
+};
+
+// Get specicfic match details based on the id
+const getMatchData = (matchId) => {
+  const matchDetails = JSON.parse(localStorage.getItem("matches-data"));
+
+  const matchData = matchDetails.filter((match) => match.id === matchId)[0];
+
+  return matchData;
+};
+
+// Reset game board
+const resetBoardHandler = () => {
+  HITS_ARRAY.fill(0);
+  HITS_NUM = 0;
+
+  const allPlayedSquares = document.querySelectorAll(
+    ".playground-page  .playgournd-wrapper .playgournd-square:not(.available)"
+  );
+
+  allPlayedSquares.forEach((square) => {
+    square.innerHTML = "";
+    square.classList.add("available");
+    setCurrentPlayer(1);
+    CURRENT_PLAYER = 1;
+    square.setAttribute("data-shape", "");
+  });
+};
+
+// Detect current player
+const setCurrentPlayer = (playerNumber) => {
+  // Set the current payer turn on the UI
+  const currentPLayerTurnImg = document.querySelector(
+    ".playground-page .controls-wrapper .current-turn img"
+  );
+
+  currentPLayerTurnImg.src = `./assets/${playerNumber === 1 ? "x" : "o"}.png`;
+};
+
+// Fill the square with the current player shape
+const hitSquare = (e) => {
+  const playedShape = document.createElement("img");
+
+  if (e.target.classList.contains("available")) {
+    HITS_NUM++;
+    // Give it a noice border effect
+    e.target.style.border = `2px solid ${
+      CURRENT_PLAYER == 1 ? "#31C4C0" : "#F2B137"
+    }`;
+    // Play the shape at the squre
+    playedShape.src = `./assets/${CURRENT_PLAYER == 1 ? "x" : "o"}.png`;
+    e.target.appendChild(playedShape);
+    // Add data attribute to the square
+    e.target.setAttribute("data-shape", CURRENT_PLAYER == 1 ? "x" : "o");
+
+    const squareIndex = parseInt(e.target.id.charAt(e.target.id.length - 1));
+
+    CURRENT_PLAYER = CURRENT_PLAYER == 1 ? 2 : 1;
+    setCurrentPlayer(CURRENT_PLAYER);
+    e.target.classList.remove("available");
+
+    detectWinOrTie(squareIndex);
+  }
+};
+
+// Detect if there is a winner
+const detectWinOrTie = (playedIndex) => {
+  HITS_ARRAY.splice(playedIndex, 1, CURRENT_PLAYER == 1 ? "x" : "o");
+  // Hits array be like ['x', 'x', 'o', 'x', 'o', 'x', 'o', 'o', 'x']
+
+  const rowCheckResult = checkRows();
+  const columnCheckResult = checkColumns();
+
+  if (rowCheckResult.win) {
+    console.log("GAME DONE!");
+    console.log("THE WINNER IS: PLAYER " + rowCheckResult.winner);
+    resetBoardHandler();
+  } else if (columnCheckResult.win) {
+    console.log("GAME DONE!");
+    console.log("THE WINNER IS: PLAYER " + columnCheckResult.winner);
+    resetBoardHandler();
+  } else if (HITS_ARRAY.every((sq) => ["x", "o"].indexOf(sq) > -1)) {
+    console.log("ROUND DONE WITH A TIE!");
+    resetBoardHandler();
+  }
+};
+
+// Check of a row is a win
+const checkRows = () => {
+  // We have 3 rows
+  // Wo we need to check 3 times
+
+  for (let i = 0; i < 3; i++) {
+    const row = HITS_ARRAY.slice(i * 3, i * 3 + 3);
+    if (row.every((el) => el == row[0] && ["x", "o"].indexOf(el) > -1)) {
+      return { win: true, winner: row[0] == "x" ? 2 : 1 };
+    }
+  }
+  return { win: false, winner: null };
+};
+
+// Check of a column is a win
+const checkColumns = () => {
+  // We have 3 columns
+  // The different between 2 following elements is 3 in index
+
+  for (let i = 0; i < 3; i++) {
+    const column = [HITS_ARRAY[i], HITS_ARRAY[i + 3], HITS_ARRAY[i + 6]];
+    if (column.every((el) => el == column[0] && ["x", "o"].indexOf(el) > -1)) {
+      return { win: true, winner: column[0] == "x" ? 2 : 1 };
+    }
+  }
+
+  return { win: false, winner: null };
 };
 
 /* Generating all app templates
@@ -73,8 +193,8 @@ const submitMatchDetailsForm = (e) => {
 const genHomeTemplate = () => {
   /* Creating DOM Elements
   ======================== */
-  const homePageCenter = document.createElement("center");
-  homePageCenter.classList.add("home-page");
+  const homeRoot = document.createElement("center");
+  homeRoot.classList.add("home-page");
 
   const homePageHeader = document.createElement("header");
 
@@ -132,20 +252,20 @@ const genHomeTemplate = () => {
   );
 
   // Appending all elements to the parent element
-  homePageCenter.appendChild(homePageHeader);
-  homePageCenter.appendChild(headerH1);
-  homePageCenter.appendChild(homeParagraph);
-  homePageCenter.appendChild(startGameButton);
+  homeRoot.appendChild(homePageHeader);
+  homeRoot.appendChild(headerH1);
+  homeRoot.appendChild(homeParagraph);
+  homeRoot.appendChild(startGameButton);
 
-  return homePageCenter;
+  return homeRoot;
 };
 
 // Generating Start-Game page temlpate
 const genMatchDetailsTemplate = () => {
   /* Creating DOM Elements
   ======================== */
-  const matchDetailsPageCenter = document.createElement("center");
-  matchDetailsPageCenter.classList.add("match-details-page");
+  const matchDetailsRoot = document.createElement("center");
+  matchDetailsRoot.classList.add("match-details-page");
 
   const matchDetialsPageHeader = document.createElement("header");
 
@@ -252,14 +372,131 @@ const genMatchDetailsTemplate = () => {
   matchDetailsForm.appendChild(submitButton);
 
   // Append elements to the parent element
-  matchDetailsPageCenter.appendChild(matchDetialsPageHeader);
-  matchDetailsPageCenter.appendChild(matchDetailsForm);
+  matchDetailsRoot.appendChild(matchDetialsPageHeader);
+  matchDetailsRoot.appendChild(matchDetailsForm);
 
-  return matchDetailsPageCenter;
+  return matchDetailsRoot;
 };
 
 // Generating Game-Playground page tamplate
-const genGamePlaygroundTemplate = () => {};
+const genGamePlaygroundTemplate = () => {
+  const allMatches = JSON.parse(localStorage.getItem("matches-data"));
+
+  const createdMatch = allMatches[allMatches.length - 1];
+  /* Math Data Object Structure 
+
+      {
+        id: 'rvypnhapi7yclg6q807q18af62ark5c8wkvm',
+        matchDate: 1659560929771, 
+        playerOneName: 'Amgad', 
+        playerTwoName: 'Tarek', 
+        score: {
+          playerOne: 0,
+          playerTwo: 0,
+          ties: 0,
+        },
+      }
+  */
+
+  console.log(createdMatch);
+  /* Creating DOM Elements
+  ======================== */
+  const playgroundRoot = document.createElement("center");
+  playgroundRoot.classList.add("playground-page");
+
+  // Create the players data DOM elements
+  const playerOneName = document.createElement("h2");
+  playerOneName.classList.add("player-one-name");
+  playerOneName.textContent = createdMatch.playerOneName;
+
+  const playerTwoName = document.createElement("h2");
+  playerTwoName.classList.add("player-two-name");
+  playerTwoName.textContent = createdMatch.playerTwoName;
+
+  const vsTag = document.createElement("h1");
+  vsTag.classList.add("vs-tag");
+  vsTag.textContent = "VS";
+
+  const playersContainer = document.createElement("div");
+  playersContainer.classList.add("players-contianer");
+
+  playersContainer.appendChild(playerOneName);
+  playersContainer.appendChild(vsTag);
+  playersContainer.appendChild(playerTwoName);
+
+  // Create the result DOM elements
+  const scoreWrapper = document.createElement("div");
+  scoreWrapper.classList.add("score-wrapper");
+
+  const playerOneScore = document.createElement("h4");
+  playerOneScore.classList.add("player-one-score");
+  playerOneScore.textContent = createdMatch.score.playerOne;
+
+  const playerTwoScore = document.createElement("h4");
+  playerTwoScore.classList.add("player-two-score");
+  playerTwoScore.textContent = createdMatch.score.playerTwo;
+
+  const tieScore = document.createElement("h4");
+  tieScore.classList.add("tie-score");
+  tieScore.textContent = createdMatch.score.ties;
+
+  scoreWrapper.appendChild(playerOneScore);
+  scoreWrapper.appendChild(tieScore);
+  scoreWrapper.appendChild(playerTwoScore);
+
+  // Creating the controls DOM elements
+  const controlsWrapper = document.createElement("div");
+  controlsWrapper.classList.add("controls-wrapper");
+
+  const logo = document.createElement("img");
+  logo.src = "./assets/logo.png";
+
+  const currentTurn = document.createElement("p");
+  currentTurn.classList.add("current-turn");
+  currentTurn.innerHTML = `
+      <img src="./assets/${CURRENT_PLAYER === 1 ? "x" : "o"}.png"/>
+      <span>Turn</span>
+  `;
+
+  const resetBoardButton = document.createElement("button");
+  resetBoardButton.id = "reset-board";
+  resetBoardButton.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30">
+  <path id="Icon_material-replay" data-name="Icon material-replay" d="M18,7.5v-6L10.5,9,18,16.5v-6a9,9,0,1,1-9,9H6a12,12,0,1,0,12-12Z" transform="translate(-6 -1.5)" fill="#192a32"/>
+  </svg>
+  `;
+  resetBoardButton.addEventListener("click", resetBoardHandler);
+  resetBoardButton.addEventListener("mousedown", (e) =>
+    handleMouseDownOnButton(e, "#7c8d98")
+  );
+  resetBoardButton.addEventListener("mouseup", (e) =>
+    handleMouseUpOnButton(e, "#7c8d98")
+  );
+
+  controlsWrapper.appendChild(logo);
+  controlsWrapper.appendChild(currentTurn);
+  controlsWrapper.appendChild(resetBoardButton);
+
+  // Create the playgroung DOM elements
+  const playgroundWrapper = document.createElement("div");
+  playgroundWrapper.classList.add("playgournd-wrapper");
+
+  for (let i = 0; i < 9; i++) {
+    const playgroundSquare = document.createElement("div");
+    playgroundSquare.classList.add("playgournd-square");
+    playgroundSquare.classList.add("available");
+    playgroundSquare.id = "square-" + i;
+    playgroundSquare.addEventListener("click", hitSquare);
+    playgroundWrapper.appendChild(playgroundSquare);
+  }
+
+  playgroundRoot.appendChild(playersContainer);
+  playgroundRoot.appendChild(scoreWrapper);
+  playgroundRoot.appendChild(controlsWrapper);
+  playgroundRoot.appendChild(playgroundWrapper);
+
+  return playgroundRoot;
+};
 
 // Generating Match-Result page template
 const genMatchResultTemplate = () => {};
@@ -276,6 +513,10 @@ const handlingCurrentView = () => {
 
     case "/match-details":
       app.appendChild(genMatchDetailsTemplate());
+      break;
+
+    case "/match/playground":
+      app.appendChild(genGamePlaygroundTemplate());
       break;
 
     default:

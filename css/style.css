@@ -6,6 +6,7 @@
     --bg-accent-color-yellow: #F2B137;
     --bg-accent-color-yellow-dark: #906C29;
     --bg-accent-color-green: #31C4C0;
+    --bg-desaturated-color: #A8BCC9;
 }
 
 
@@ -51,11 +52,15 @@ button {
 }
 
 .watermark.o {
+    width: 40%;
+    min-width: 400px;
     top: -70px;
     right: -150px;
 }
 
 .watermark.x {
+    width: 50%;
+    min-width: 450px;
     bottom: -70px;
     left: -150px;
 }
@@ -185,10 +190,129 @@ p {
 }
 
 @media screen and (max-width: 700px) {
-    .match-details-page form{
+    .match-details-page form .form-boxes-wrapper{
         flex-direction: column;
     }
     .match-details-page form .form-box{
         width: 100%;
     }
+}
+
+/* Match Playground Page
+======================== */
+.playground-page {
+    width: 50%;
+    min-width: 300px;
+    max-width:550px;
+    margin: auto;
+}
+.playground-page .players-contianer{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+.playground-page .players-contianer .player-one-name{
+    color: var(--bg-accent-color-green);
+}
+.playground-page .players-contianer .player-two-name{
+    color: var(--bg-accent-color-yellow);
+}
+.playground-page .players-contianer .vs-tag{
+    color: var(--bg-accent-color-green);
+    font-size: 50px;
+    font-weight: 900;
+}
+.playground-page .players-contianer .vs-tag::first-letter{
+    color: var(--bg-accent-color-yellow);
+}
+.playground-page .score-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.playground-page .score-wrapper > *{
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #F2B137;
+    width: 100%;
+    border-radius: 12px;
+    color: var(--bg-dark-color);
+    font-size: 22px;
+}
+.playground-page .score-wrapper .tie-score {
+    width: 250px;
+    background: var(--bg-desaturated-color);
+}
+.playground-page .score-wrapper .player-one-score {
+    background: var(--bg-accent-color-green);
+}
+.playground-page .controls-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0px;
+}
+.playground-page .controls-wrapper img{
+    width: 80px;
+}
+.playground-page .controls-wrapper .current-turn {
+    padding: 8px 20px;
+    background: var(--bg-light-color);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+.playground-page .controls-wrapper .current-turn span{
+    color: var(--bg-desaturated-color);
+    font-weight: 500;
+}
+.playground-page .controls-wrapper .current-turn img{
+    width: 20px;
+}
+.playground-page .controls-wrapper #reset-board {
+    width: 40px;
+    aspect-ratio: 1/1;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 0px #7c8d98;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.playground-page .controls-wrapper #reset-board svg {
+    width: 15px;
+    pointer-events: none;
+}
+.playground-page  .playgournd-wrapper{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 75%;
+    gap: 15px;
+    min-width: 290px;
+}
+.playground-page  .playgournd-wrapper .playgournd-square{
+    padding: 10px;
+    background: var(--bg-light-color);
+    aspect-ratio: 1/1;
+    border-radius: 20px;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.playground-page  .playgournd-wrapper .playgournd-square img{
+    width: 100%;
+}
+.playground-page  .playgournd-wrapper .playgournd-square.available{
+    border:  2px solid var(--bg-light-color) !important;
+    pointer-events: all;
+    cursor: pointer;
 }
