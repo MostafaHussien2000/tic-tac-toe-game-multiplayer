@@ -147,14 +147,43 @@ const detectWinOrTie = (playedIndex) => {
   if (rowCheckResult.win) {
     console.log("GAME DONE!");
     console.log("THE WINNER IS: PLAYER " + rowCheckResult.winner);
+    const winnerPlayer = {
+      playerNumber: rowCheckResult.winner,
+      playerName: getPlayerName(rowCheckResult.winner),
+    };
+    app.appendChild(genRoundResultTemplate(winnerPlayer));
     resetBoardHandler();
   } else if (columnCheckResult.win) {
     console.log("GAME DONE!");
     console.log("THE WINNER IS: PLAYER " + columnCheckResult.winner);
+    const winnerPlayer = {
+      playerNumber: columnCheckResult.winner,
+      playerName: getPlayerName(columnCheckResult.winner),
+    };
+    app.appendChild(genRoundResultTemplate(winnerPlayer));
     resetBoardHandler();
   } else if (HITS_ARRAY.every((sq) => ["x", "o"].indexOf(sq) > -1)) {
     console.log("ROUND DONE WITH A TIE!");
+    app.appendChild(genRoundResultTemplate(null));
     resetBoardHandler();
+  }
+};
+
+// Get player name in a current match
+const getPlayerName = (playerNumber) => {
+  playerNumber =
+    typeof playerNumber == "number" && [1, 2].indexOf(playerNumber) > -1
+      ? playerNumber
+      : false;
+
+  if (playerNumber) {
+    const allMatches = JSON.parse(localStorage.getItem("matches-data"));
+    const currentMatch = allMatches[allMatches.length - 1];
+
+    const playerName =
+      currentMatch[playerNumber == 1 ? "playerOneName" : "playerTwoName"];
+
+    return playerName;
   }
 };
 
@@ -185,6 +214,36 @@ const checkColumns = () => {
   }
 
   return { win: false, winner: null };
+};
+
+// Continue the match and update the score
+const continueTheMatchAndUpdateScore = (winnerNumber) => {
+  console.log("JUMP!");
+  const allMatches = JSON.parse(localStorage.getItem("matches-data"));
+  const currentMatch = allMatches[allMatches.length - 1];
+
+  const updatedMatch = {
+    ...currentMatch,
+    score: {
+      playerOne:
+        winnerNumber == 1
+          ? currentMatch.score.playerOne + 1
+          : currentMatch.score.playerOne,
+      playerTwo:
+        winnerNumber == 2
+          ? currentMatch.score.playerTwo + 1
+          : currentMatch.score.playerTwo,
+      ties:
+        winnerNumber == 0
+          ? currentMatch.score.ties + 1
+          : currentMatch.score.ties,
+    },
+  };
+
+  allMatches.pop();
+  allMatches.push(updatedMatch);
+
+  localStorage.setItem("matches-data", JSON.stringify(allMatches));
 };
 
 /* Generating all app templates
@@ -499,7 +558,88 @@ const genGamePlaygroundTemplate = () => {
 };
 
 // Generating Match-Result page template
-const genMatchResultTemplate = () => {};
+const genRoundResultTemplate = (winner) => {
+  /* Create DOM elements
+  ====================== */
+  // Create the root element
+  const shadowWrapper = document.createElement("div");
+  shadowWrapper.classList.add("round-result-shadow");
+
+  // Create result box
+  const resultBox = document.createElement("center");
+  resultBox.classList.add("result-box");
+
+  const roundState = document.createElement("p");
+  roundState.textContent = "Round Ended !".toUpperCase();
+
+  const winnerHolder = document.createElement("h1");
+
+  const winnerShape = document.createElement("img");
+  winnerShape.src = `./assets/${winner?.playerNumber == 1 ? "x" : "o"}.png`;
+
+  const winnerName = document.createElement("span");
+  winnerName.classList.add("winner-player-" + winner?.playerNumber);
+  winnerName.textContent =
+    `${winner?.playerName} takes the round !`.toUpperCase();
+
+  const tieHolder = document.createElement("h1");
+  tieHolder.classList.add("tie");
+  tieHolder.textContent = "This rounded ended with a tie".toUpperCase();
+
+  const quitButton = document.createElement("button");
+  quitButton.id = "quit-match";
+  quitButton.textContent = "QUIT!";
+  quitButton.addEventListener("click", () => {
+    continueTheMatchAndUpdateScore(winner?.playerNumber || 0);
+    moveToRouteHandler("/");
+  });
+  quitButton.addEventListener("mousedown", (e) => {
+    handleMouseDownOnButton(e, "#646E74");
+  });
+  quitButton.addEventListener("mouseup", (e) => {
+    handleMouseUpOnButton(e, "#646E74");
+  });
+
+  const nextRoundButton = document.createElement("button");
+  nextRoundButton.id = "next-round";
+  nextRoundButton.textContent = "NEXT ROUND!";
+  nextRoundButton.addEventListener("click", () => {
+    continueTheMatchAndUpdateScore(winner?.playerNumber || 0);
+    moveToRouteHandler("/match/playground");
+  });
+  nextRoundButton.addEventListener("mousedown", (e) => {
+    handleMouseDownOnButton(e, "#906C29");
+  });
+  nextRoundButton.addEventListener("mouseup", (e) => {
+    handleMouseUpOnButton(e, "#906C29");
+  });
+
+  const buttonsWrapper = document.createElement("div");
+  buttonsWrapper.classList.add("buttons-wrapper");
+
+  buttonsWrapper.appendChild(quitButton);
+  buttonsWrapper.appendChild(nextRoundButton);
+
+  winnerHolder.appendChild(winnerShape);
+  winnerHolder.appendChild(winnerName);
+
+  resultBox.appendChild(roundState);
+
+  if (winner) {
+    resultBox.appendChild(winnerHolder);
+  } else {
+    resultBox.appendChild(tieHolder);
+  }
+
+  resultBox.appendChild(buttonsWrapper);
+
+  shadowWrapper.appendChild(resultBox);
+
+  return shadowWrapper;
+};
+
+// Generating the 404 page not found route
+const gen404Template = () => {};
 
 /* Handling the current view
 ============================ */

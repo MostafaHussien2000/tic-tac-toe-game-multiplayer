@@ -7,6 +7,7 @@
     --bg-accent-color-yellow-dark: #906C29;
     --bg-accent-color-green: #31C4C0;
     --bg-desaturated-color: #A8BCC9;
+    --bg-desaturated-dark-color: #646E74;
 }
 
 
@@ -31,7 +32,7 @@
 
 body {
     background: var(--bg-dark-color);
-    /* overflow: hidden; */
+    overflow-x: hidden;
     width: 100vw;
     padding-top: 10px;
 }
@@ -316,3 +317,74 @@ p {
     pointer-events: all;
     cursor: pointer;
 }
+
+/* Match Result Box
+=================== */
+.round-result-shadow {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.586);
+    backdrop-filter: blur(2px);
+}
+
+.round-result-shadow .result-box {
+    width: 100vw;
+    padding: 50px 20px;
+    background: var(--bg-dark-color);
+}
+.round-result-shadow .result-box p{
+    color: var(--bg-desaturated-color);
+}
+.round-result-shadow .result-box h1.tie {
+    color: var(--bg-desaturated-color)
+}
+.round-result-shadow .result-box h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.round-result-shadow .result-box h1 img{
+    width: 50px;
+}
+.round-result-shadow .result-box h1 span.winner-player-1 {
+    color: var(--bg-accent-color-green)
+}
+.round-result-shadow .result-box h1 span.winner-player-2 {
+    color: var(--bg-accent-color-yellow)
+}
+.round-result-shadow .result-box h1.tie {
+    color: var(--bg-desaturated-color)
+}
+.round-result-shadow .result-box .buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.round-result-shadow .result-box .buttons-wrapper button{
+    margin-top: 50px;
+    display: block;
+    padding: 15px 20px;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    transform: translateY(-8px);
+    transition: box-shadow 0.2s ease, transform 0.2s ease; 
+}
+.round-result-shadow .result-box .buttons-wrapper button#next-round{    
+    background: var(--bg-accent-color-yellow);
+    box-shadow: 0px 8px 0px var(--bg-accent-color-yellow-dark);
+}
+.round-result-shadow .result-box .buttons-wrapper button#quit-match{
+    background: var(--bg-desaturated-color);
+    box-shadow: 0px 8px 0px var(--bg-desaturated-dark-color);
+    color: var(--bg-dark-color);
+}    
