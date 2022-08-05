@@ -387,4 +387,11 @@ p {
     background: var(--bg-desaturated-color);
     box-shadow: 0px 8px 0px var(--bg-desaturated-dark-color);
     color: var(--bg-dark-color);
-}    
+}
+/* Media Queries */
+@media screen and (max-width: 750px) {
+    .round-result-shadow .result-box h1 {
+        margin-top: 15px;
+        flex-direction: column;
+    }
+}
