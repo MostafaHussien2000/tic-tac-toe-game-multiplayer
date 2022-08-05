@@ -143,6 +143,7 @@ const detectWinOrTie = (playedIndex) => {
 
   const rowCheckResult = checkRows();
   const columnCheckResult = checkColumns();
+  const checkDiagonalsResult = checkDiagonals();
 
   if (rowCheckResult.win) {
     console.log("GAME DONE!");
@@ -159,6 +160,13 @@ const detectWinOrTie = (playedIndex) => {
     const winnerPlayer = {
       playerNumber: columnCheckResult.winner,
       playerName: getPlayerName(columnCheckResult.winner),
+    };
+    app.appendChild(genRoundResultTemplate(winnerPlayer));
+    resetBoardHandler();
+  } else if (checkDiagonalsResult.win) {
+    const winnerPlayer = {
+      playerNumber: checkDiagonalsResult.winner,
+      playerName: getPlayerName(checkDiagonalsResult.winner),
     };
     app.appendChild(genRoundResultTemplate(winnerPlayer));
     resetBoardHandler();
@@ -187,7 +195,7 @@ const getPlayerName = (playerNumber) => {
   }
 };
 
-// Check of a row is a win
+// Check if a row is a win
 const checkRows = () => {
   // We have 3 rows
   // Wo we need to check 3 times
@@ -201,7 +209,7 @@ const checkRows = () => {
   return { win: false, winner: null };
 };
 
-// Check of a column is a win
+// Check if a column is a win
 const checkColumns = () => {
   // We have 3 columns
   // The different between 2 following elements is 3 in index
@@ -214,6 +222,28 @@ const checkColumns = () => {
   }
 
   return { win: false, winner: null };
+};
+
+// Check if th ediagonal is a win
+const checkDiagonals = () => {
+  // We have 2 diagonals
+  // the first diagonal is represented in index 0, 4 and 8 in the HITS_ARRAY
+  // the second diagonal is represented in index 2, 4 and 6 in the HITS_ARRAY
+  const primaryDiagonal = [HITS_ARRAY[0], HITS_ARRAY[4], HITS_ARRAY[8]];
+  const secondaryDiagonal = [HITS_ARRAY[2], HITS_ARRAY[4], HITS_ARRAY[6]];
+
+  if (
+    primaryDiagonal.every(
+      (el) => el === primaryDiagonal[0] && ["x", "o"].indexOf(el) > -1
+    ) ||
+    secondaryDiagonal.every(
+      (el) => el === secondaryDiagonal[0] && ["x", "o"].indexOf(el) > -1
+    )
+  ) {
+    return { win: true, winner: HITS_ARRAY[4] == "x" ? 2 : 1 };
+  } else {
+    return { win: false, winner: null };
+  }
 };
 
 // Continue the match and update the score
